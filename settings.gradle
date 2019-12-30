@@ -1,0 +1,71 @@
+rootProject.name = 'AndroidGradleTest'
+
+/**
+ * u can disable module by adding excludexxx properties in local.properties
+ * the full excludexxx like below example:
+ *
+ exclude_app_test=true
+ exclude_app_test1=true
+ exclude_lib_test=true
+ exclude_lib_test1=true
+ * u can copy the example ,and modify in u local.properties
+ * focus!!!! local.properties should not be pushed to svn or git server.
+ */
+
+println "\n======================================================"
+println "**********  Init All Module ********** "
+println "**** compile gradle verison:" + gradle.gradleVersion + "  ***** "
+println "======================================================\n"
+def enableModuleMap = [
+        app_test : true,
+        app_test1: true,
+        lib_test : true,
+        lib_test1: true
+]
+println "**** read enableModuleMap from local.properties"
+Properties properties = new Properties()
+File propertyFile = new File(rootDir.getAbsolutePath() + "/local.properties")
+if (propertyFile.exists()) {
+    properties.load(propertyFile.newDataInputStream())
+    enableModuleMap.each {
+        entry ->
+            entry.value = !Boolean.parseBoolean(properties.getProperty('exclude_' + entry.key))
+            println "enableModuleMap->module  " + entry.key + " is included : " + entry.value
+    }
+} else {
+    println "**** ${propertyFile.getAbsolutePath()} is not exists! "
+}
+println "**** finish enableModuleMap from local.properties "
+
+
+/**
+ * -----------------------application modules--------------------------
+ */
+
+if (enableModuleMap.app_test) {
+    include 'app_test'
+    project(':app_test').projectDir = new File('testapplication')
+}
+
+if (enableModuleMap.app_test1) {
+    include 'app_test1'
+    project(':app_test1').projectDir = new File('testapplication1')
+}
+
+/**
+ * -----------------------library modules--------------------------
+ */
+if (enableModuleMap.lib_test) {
+    include 'lib_test'
+    project(':lib_test').projectDir = new File('testlibrary')
+}
+
+if (enableModuleMap.lib_test1) {
+    include 'lib_test1'
+    project(':lib_test1').projectDir = new File('testlibrary1')
+}
+
+include 'lib_common'
+project(':lib_common').projectDir = new File('commonlibrary')
+
+

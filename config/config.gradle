@@ -1,0 +1,126 @@
+
+/**
+ *  全局统一配置文件
+ */
+ext {
+    //true 每个业务Module可以单独开发
+    //false 每个业务Module以lib的方式运行
+    //修改之后需要Sync方可生效
+    isBuildModule = false
+    //是否需要代码混淆
+    isNeedMinify = false
+    //是否需要打开git版本
+    isNeedSvnVersion = false
+    //是否需要打开git版本
+    isNeedGitVersion = false
+
+    defaultKeyStoreDir = rootProject.file("config/keystore")
+
+    modules = [
+            utilcommon_dir : rootProject.file("../business/com.avit.util.common")   ,
+            uiservice_dir : rootProject.file("../business/com.avit.ui.service")
+    ]
+
+//    copyFile = this.&copyFile
+//    getDateYYMMDD = this.&getDateYYMMDD
+
+    androids = [
+            applicationId           : "com.avit.app",     //应用ID
+            versionCode             : getVersionCode(),      //版本号
+            versionName             : getVersionName(),      //版本名称
+            versionCodeDebug        : 8888888888,      //版本号
+            versionNameDebug        : "DebugVersion",      //版本名称
+
+            compileSdkVersion       : 28,
+            minSdkVersion           : 19,
+            buildToolsVersion       : "29.0.2",
+            /** when targetSdkVersion >= 23, need Requesting Permissions at Run Time
+             * clear app data in system setting, it will crash,
+             * because it's not enough to declare permissions in the manifest.
+             * For some permissions, you have to explicitly ask user in the runtime,
+             * next version .fix this bug.
+             * https://developer.android.com/training/permissions/requesting
+             * @FIX it* */
+            targetSdkVersion        : 22,
+
+            androidSupportSdkVersion: "28.0.0",
+    ]
+
+    //版本号
+    versions = [
+
+            xmaterialVersion        : "1.0.0",
+            xrunnerVersion          : "1.2.0",
+            xrolesVersion           : "1.2.0",
+            xespressoVersion        : "3.2.0",
+            xconstraintLayoutVersion: "1.1.3",
+            xappcompatVersion       : "1.1.0",
+            xannotationVersion      : "1.1.0",
+            xcardviewVersion        : "1.1.0",
+            xrecyclerviewVersion    : "1.1.0",
+            xsupportv4Version       : "1.1.0",
+            xmultidexVersion        : "2.0.0",
+            xleanbackVersion        : "1.0.0",
+            constraintLayoutVersion : "1.1.3",
+            runnerVersion           : "1.0.1",
+            espressoVersion         : "3.0.1",
+            junitVersion            : "4.12",
+            annotationsVersion      : "27.1.1",
+            glideVersion            : "4.9.0",
+            picassionVersion        : "2.71828",
+            loggerVersion           : "2.2.0",
+            volleyVersion           : "1.1.0",
+            eventbusVersion         : "3.1.1",
+            gsonVersion             : "2.8.6",
+            litepalVersion          : "3.0.0",
+            butterknifeVersion      : "10.2.0",
+            arouterapiVersion       : "1.5.0",
+            aroutercompilerVersion  : "1.2.2",
+            universalimageloaderVersion  : "1.8.2",
+            zxingVersion            :"3.4.0"
+    ]
+
+
+    dependencies = [
+            "x_constraint_layout"   : "androidx.constraintlayout:constraintlayout:${versions["xconstraintLayoutVersion"]}",
+            "x_runner"              : "androidx.test:runner:${versions["xrunnerVersion"]}",
+            "x_rules"               : "androidx.test:rules:${versions["xrulesVersion"]}",
+            "x_espresso-core"       : "androidx.test.espresso:espresso-core:${versions["xespressoVersion"]}",
+            "x_annotations"         : "androidx.annotation:annotation:${versions["xannotationVersion"]}",
+            "x_cardview"            : "androidx.cardview:cardview:cardview:${versions["xcardviewVersion"]}",
+            "x_material"            : "com.google.android.material:material:${versions["xmaterialVersion"]}",
+            "x_support-v4"          : "androidx.legacy:legacy-support-v4:${versions["xsupportv4Version"]}",
+            "x_multidex"            : "androidx.multidex:multidex:${versions["xmultidexVersion"]}",
+            "x_leanback"            : "androidx.leanback:leanback:${versions["xleanbackVersion"]}",
+            "x_recyclerview"        : "androidx.recyclerview:recyclerview:${versions["xrecyclerviewVersion"]}",
+            "x_appcompat"           : "androidx.appcompat:appcompat:${versions["xappcompatVersion"]}",
+            "constraint_layout"     : "com.android.support.constraint:constraint-layout:${versions["constraintLayoutVersion"]}",
+            "runner"                : "com.android.support.test:runner:${versions["runnerVersion"]}",
+            "espresso-core"         : "com.android.support.test.espresso:espresso-core:${versions["espressoVersion"]}",
+            "junit"                 : "junit:junit:${versions["junitVersion"]}",
+            "support_annotations"   : "com.android.support:support-annotations:${versions["annotationsVersion"]}",
+            "design"                : "com.android.support:design:${versions["androidSupportSdkVersion"]}",
+            "support-v4"            : "com.android.support:support-v4:${versions["androidSupportSdkVersion"]}",
+            "cardview-v7"           : "com.android.support:cardview-v7:${versions["androidSupportSdkVersion"]}",
+            "recyclerview-v7"       : "com.android.support:recyclerview-v7:${versions["androidSupportSdkVersion"]}",
+            "crashreport"           : 'com.tencent.bugly:crashreport:latest.release',
+            "crashreport-native"    : 'com.tencent.bugly:nativecrashreport:latest.release',
+            "glide"                 : "com.github.bumptech.glide:glide:${versions["glideVersion"]}",
+            "glide-compiler"        : "com.github.bumptech.glide:compiler:${versions["glideVersion"]}",
+            "logger"                : "com.orhanobut:logger:${versions["loggerVersion"]}",
+            "volley"                : "com.android.volley:volley:${versions["volleyVersion"]}",
+            "eventbus"              : "org.greenrobot:eventbus:${versions["eventbusVersion"]}",
+            "gson"                  : "com.google.code.gson:gson:${versions["gsonVersion"]}",
+            "picasso"               : "com.squareup.picasso:picasso:${versions["picassionVersion"]}",
+            "litpal"                : "org.litepal.android:java:${versions["litepalVersion"]}",
+            "butterknife"           : "com.jakewharton:butterknife:${versions["butterknifeVersion"]}",
+            "butterknife-compiler"  : "com.jakewharton:butterknife-compiler:${versions["butterknifeVersion"]}",
+            "arouter"               : "com.alibaba:arouter-api:${versions["arouterapiVersion"]}",
+            "arouter-compiler"      : "com.alibaba:arouter-compiler:${versions["aroutercompilerVersion"]}",
+            "universal-image-loader": "com.nostra13.universalimageloader:universal-image-loader:${versions["universalimageloaderVersion"]}",
+            "zxing" : "com.google.zxing:core:${versions["zxingVersion"]}"
+
+    ]
+}
+
+

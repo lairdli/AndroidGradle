@@ -1,0 +1,207 @@
+if (Boolean.valueOf(rootProject.ext.isBuildModule)) {
+    apply plugin: 'com.android.application'
+} else {
+    apply plugin: 'com.android.library'
+}
+
+apply plugin: 'com.jakewharton.butterknife'
+
+android {
+    compileSdkVersion rootProject.ext.androids.compileSdkVersion
+    buildToolsVersion rootProject.ext.androids.buildToolsVersion
+    flavorDimensions "versionCode"
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.androids.minSdkVersion
+        targetSdkVersion rootProject.ext.androids.targetSdkVersion
+        versionCode rootProject.ext.androids.versionCode
+        versionName rootProject.ext.androids.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+    }
+
+    signingConfigs {
+        release {
+            keyAlias 'test'
+            keyPassword '123456'
+            storeFile file("${rootProject.ext.defaultKeyStoreDir}" + '/test.keystore')
+            storePassword '123456'
+        }
+
+        debug {
+            keyAlias 'test'
+            keyPassword '123456'
+            storeFile file("${rootProject.ext.defaultKeyStoreDir}" + '/test.keystore')
+            storePassword '123456'
+        }
+
+        /**
+         * u can add keystore config in u local.properties,like this
+         # defined kesotre
+         * SIGNINGCONFIGS_KEYALIAS=test
+         * SIGNINGCONFIGS_KEYPASSWORD=123456
+         * SIGNINGCONFIGS_STOREFILE=config/keystore/test.keystore
+         * SIGNINGCONFIGS_STOREPASSWORD=123456
+         **/
+//        test {
+//            keyAlias SIGNINGCONFIGS_KEYALIAS
+//            keyPassword SIGNINGCONFIGS_KEYPASSWORD
+//            storeFile file(SIGNINGCONFIGS_STOREFILE)
+//            storePassword SIGNINGCONFIGS_STOREPASSWORD
+//        }
+    }
+
+    buildTypes {
+
+        debug {
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+
+            //如果是lib-app isBuildModule模式，走manifest目录下的AndroidManifest
+            if (Boolean.valueOf(rootProject.ext.isBuildModule)) {
+                manifest.srcFile 'src/main/manifest/AndroidManifest.xml'
+            } else {
+                manifest.srcFile 'src/main/AndroidManifest.xml'
+                java {
+                    //lib model ,exclude all file below java/debug/
+                    exclude '*modlue'
+                }
+            }
+        }
+    }
+
+}
+
+
+if (Boolean.valueOf(rootProject.ext.isBuildModule)) {
+    android.applicationVariants.all { variant ->
+
+        //gradle4.10以后自定义版本命令规则以及生成目录
+        variant.outputs.each { output ->
+            if (variant.buildType.name == 'release') {
+                def outputFileName = "${variant.applicationId}." +
+                        "${variant.buildType.name}.${variant.versionName}.apk"
+                output.outputFileName = outputFileName
+                def outputDir = new File("$rootProject.projectDir/out/${project.name}/" +
+                        "${variant.flavorName}")
+                variant.packageApplicationProvider.get().outputDirectory = new File("$outputDir")
+            }
+        }
+
+        //gradle4.10以前，自定义版本命令规则以及生成目录
+//    applicationVariants.all { variant ->
+//        variant.outputs.all { output ->
+//            if (variant.buildType.name == 'release') {
+//                outputFileName = "${variant.applicationId}_${variant.buildType.name}_${variant.versionName}.apk"
+//                if (outputFileName != null && outputFileName.endsWith('.apk')) {
+//                    variant.getPackageApplication().outputDirectory = new File("$rootProject.projectDir/out/${project.name}/"+
+//                            "${variant.flavorName}")
+//                    variant.getPackageApplication().outputScope.apkDatas.forEach {
+//                        apkData -> apkData.outputFileName = outputFileName
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+        //自定义版本备份路径以及版本描述
+        variant.assemble.doLast {
+            variant.outputs.each { output ->
+                def outputFile = output.outputFile;
+
+                if (outputFile != null && outputFile.name.endsWith('.apk') && variant.buildType.name == 'release') {
+                    packageAppRelease(outputFile, variant)
+                }
+            }
+        }
+    }
+
+} else {
+    android.libraryVariants.all { variant ->
+        variant.assemble.doLast {
+            variant.outputs.each { output ->
+                def outputFile = output.outputFile;
+
+                if (outputFile != null && outputFile.name.endsWith('.aar') && variant.buildType.name == 'release') {
+                    copyFileToApk(outputFile, variant)
+                }
+            }
+        }
+    }
+}
+
+
+//版本拷贝+版本描述文件自动生成
+def packageAppRelease(outputFile, variant) {
+
+    def releaseDir = "$rootProject.projectDir/out/release/app/$getDateYYMMDD"
+    def newName = variant.applicationId + '.apk'
+
+    copyFile("$outputFile", releaseDir
+            , "$outputFile.name", newName)
+
+    StringBuilder stringBuild = new StringBuilder()
+    stringBuild.
+            append("****************************************************").append('\n')
+            .append("*************** https://lairdli.top ***************").append('\n')
+            .append("****************************************************").append('\n')
+            .append("**:Name:" + outputFile.name).append('\n')
+            .append("**:ApplicationId:" + variant.applicationId).append('\n')
+            .append("**:VersionCode:" + variant.versionCode).append('\n')
+            .append("**:VeresionName:" + variant.versionName).append('\n')
+            .append("**:LastModify:" + formatDateYYMMDDHMS(outputFile.lastModified())).append('\n')
+            .append("**:Size:" + outputFile.length()).append('\n')
+            .append("**:Md5:" + getFileMd5(outputFile)).append('\n')
+            .append("**:Sha1:" + getFileSha1(outputFile)).append('\n')
+            .append("**:Des:").append('\n')
+            .append("****************************************************")
+            .append('\n').append('\n').append('\n')
+
+    println stringBuild.toString()
+
+    def releaseModuleFileFullPath = outputFile.getParent() + File.separator + variant.applicationId + '.txt';
+    def releasePackFileFullPath = releaseDir + File.separator + variant.applicationId + '.txt';
+
+    writeFile(releaseModuleFileFullPath, stringBuild.toString(), true)
+    writeFile(releasePackFileFullPath, stringBuild.toString(), false)
+
+    return newName;
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation rootProject.ext.dependencies["butterknife"]
+    annotationProcessor rootProject.ext.dependencies["butterknife-compiler"]
+
+    implementation rootProject.ext.dependencies["arouter"]
+    annotationProcessor rootProject.ext.dependencies["arouter-compiler"]
+}
