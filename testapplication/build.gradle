@@ -1,5 +1,16 @@
 apply from: rootProject.file("config/app.gradle")
 
+
+android {
+    productFlavors {
+
+        mulTest {
+            applicationId "top.lairdli.study.testapplication_mul"
+        }
+    }
+
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 

@@ -17,8 +17,8 @@ println "**********  Init All Module ********** "
 println "**** compile gradle verison:" + gradle.gradleVersion + "  ***** "
 println "======================================================\n"
 def enableModuleMap = [
-        app_test : true,
-        app_test1: true,
+        app_test_mul : true,
+        app_test1_mul: true,
         lib_test : true,
         lib_test1: true
 ]
@@ -42,14 +42,14 @@ println "**** finish enableModuleMap from local.properties "
  * -----------------------application modules--------------------------
  */
 
-if (enableModuleMap.app_test) {
-    include 'app_test'
-    project(':app_test').projectDir = new File('testapplication')
+if (enableModuleMap.app_test_mul) {
+    include 'app_test_mul'
+    project(':app_test_mul').projectDir = new File('testapplication')
 }
 
-if (enableModuleMap.app_test1) {
-    include 'app_test1'
-    project(':app_test1').projectDir = new File('testapplication1')
+if (enableModuleMap.app_test1_mul) {
+    include 'app_test1_mul'
+    project(':app_test1_mul').projectDir = new File('testapplication1')
 }
 
 /**
