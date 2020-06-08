@@ -5,9 +5,9 @@ dependencies {
 
     implementation project (':lib_common')
 
-    if (Boolean.valueOf(rootProject.ext.isBuildModule)) {
+//    if (Boolean.valueOf(rootProject.ext.isBuildModule)) {
         implementation rootProject.ext.dependencies["x_constraint_layout"]
-    }
+//    }
     implementation rootProject.ext.dependencies["x_appcompat"]
     testImplementation rootProject.ext.dependencies["junit"]
     androidTestImplementation rootProject.ext.dependencies["runner"]

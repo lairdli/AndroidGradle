@@ -151,11 +151,22 @@ if (Boolean.valueOf(rootProject.ext.isBuildModule)) {
                 def outputFile = output.outputFile;
 
                 if (outputFile != null && outputFile.name.endsWith('.aar') && variant.buildType.name == 'release') {
-                    copyFileToApk(outputFile, variant)
+                    copyFileToAAR(outputFile, variant)
                 }
             }
         }
     }
+}
+
+def copyFileToAAR(outputFile, variant) {
+
+    def newName = variant.applicationId + '.aar';
+    def releaseDir = "$rootProject.projectDir/out/release/aar/$getDateYYMMDD"
+
+    copyFile("$outputFile", releaseDir
+            , "$outputFile.name", "$newName")
+
+    return newName;
 }
 
 
